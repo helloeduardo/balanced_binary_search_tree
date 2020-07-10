@@ -14,7 +14,7 @@ class Tree
     return nil if data.empty?
     return Node.new(data[0]) if data.size == 1
 
-    #get the middle of the array and make it root
+    #get the middle of the array and make it the root node
     midpoint = data.size / 2
     root_node = Node.new(data[midpoint])
 
@@ -28,13 +28,45 @@ class Tree
     root_node
   end
 
-  def insert(value)
+  def insert(value, pointer = root)
+    new_node = Node.new(value)
+
+    if pointer.nil?                   #base case
+      pointer = new_node
+    else
+      if new_node < pointer           #check left
+        if pointer.left.nil?            #set value to left child if empty
+          pointer.left = new_node
+        else                            #otherwise set new pointer and repeat
+          insert(value, pointer.left)
+        end
+      else                            #check right
+        if pointer.right.nil?           #set value to right child if empty
+          pointer.right = new_node
+        else
+          insert(value, pointer.right)  #otherwise set new pointer and repeat
+        end
+      end
+    end
   end
 
   def delete(value)
   end
 
   def find(value)
+    pointer = root
+
+    until pointer.data == value
+      if value < pointer.data
+        pointer = pointer.left
+      else
+        pointer = pointer.right
+      end
+
+      break if pointer.nil?
+    end
+
+    pointer
   end
 
   def level_order
@@ -67,4 +99,7 @@ class Tree
 end
 
 tree = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
+tree.pretty_print
+puts tree.find(7).inspect
+tree.insert(21)
 tree.pretty_print
