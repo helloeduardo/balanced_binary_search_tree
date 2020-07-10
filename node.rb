@@ -8,8 +8,8 @@ class Node
     @right = right
   end
 
-  def <=>(param)
-    
+  def <=>(other_node)
+    data <=> other_node.data
   end
 
 end
