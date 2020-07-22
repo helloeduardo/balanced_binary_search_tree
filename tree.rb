@@ -28,45 +28,76 @@ class Tree
     root_node
   end
 
-  def insert(value, pointer = root)
+  def insert(value, node = root)   #recursive solution
     new_node = Node.new(value)
 
-    if pointer.nil?                   #base case
-      pointer = new_node
+    if node.nil?                   #base cases
+      node = new_node
+    elsif new_node == node           #keep only one duplicate
+      node = new_node
     else
-      if new_node < pointer           #check left
-        if pointer.left.nil?            #set value to left child if empty
-          pointer.left = new_node
-        else                            #otherwise set new pointer and repeat
-          insert(value, pointer.left)
+      if new_node < node           #check left
+        if node.left.nil?            #set value to left child if empty
+          node.left = new_node
+        else                            #otherwise set new node and repeat
+          insert(value, node.left)
         end
       else                            #check right
-        if pointer.right.nil?           #set value to right child if empty
-          pointer.right = new_node
+        if node.right.nil?           #set value to right child if empty
+          node.right = new_node
         else
-          insert(value, pointer.right)  #otherwise set new pointer and repeat
+          insert(value, node.right)  #otherwise set new node and repeat
         end
       end
     end
   end
 
-  def delete(value)
+  def delete(value, node = @root)
+    #compare values and move left/right accordingly
+    if value < node.data
+      node.left = delete(value, node.left)
+    elsif value > node.data
+      node.right = delete(value, node.right)
+
+    #until value is found (gives error if value does not match)
+    else
+      if node.left.nil?         #check for one child node
+        temp = node.right
+        node = nil
+        return temp
+      elsif node.right.nil?
+        temp = node.left
+        node = nil
+        return temp
+      else                      #if node has two children
+        temp = min_value(node.right)
+        node.data = temp.data
+        node.right = delete(temp.data, node.right)
+      end
+    end
+    return node
   end
 
-  def find(value)
-    pointer = root
+  def min_value(node)
+    current = node
+    current = current.left until current.left.nil?
+    current
+  end
 
-    until pointer.data == value
-      if value < pointer.data
-        pointer = pointer.left
+  def find(value)                      #iterative method
+    node = root
+
+    until node.data == value
+      if value < node.data
+        node = node.left
       else
-        pointer = pointer.right
+        node = node.right
       end
 
-      break if pointer.nil?
+      break if node.nil?
     end
 
-    pointer
+    node
   end
 
   def level_order
@@ -101,5 +132,7 @@ end
 tree = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 tree.pretty_print
 puts tree.find(7).inspect
-tree.insert(21)
+tree.insert(7)
+tree.pretty_print
+tree.delete(3)
 tree.pretty_print
