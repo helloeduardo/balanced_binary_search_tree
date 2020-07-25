@@ -62,17 +62,17 @@ class Tree
     #until value is found (gives error if value does not match)
     else
       if node.left.nil?         #check for one child node
-        temp = node.right
+        successor = node.right
         node = nil
-        return temp
+        return successor
       elsif node.right.nil?
-        temp = node.left
+        successor = node.left
         node = nil
-        return temp
+        return successor
       else                      #if node has two children
-        temp = min_value(node.right)
-        node.data = temp.data
-        node.right = delete(temp.data, node.right)
+        successor = min_value(node.right)
+        node.data = successor.data
+        node.right = delete(successor.data, node.right)
       end
     end
     return node
@@ -100,7 +100,16 @@ class Tree
     node
   end
 
-  def level_order
+  def level_order(node = @root, queue = [], order = [])
+    queue << node
+    until queue.empty?
+      current = queue.first
+      order << current.data
+      queue << current.left unless current.left.nil?
+      queue << current.right unless current.right.nil?
+      queue.delete(queue.first)
+    end
+    return order
   end
 
   def inorder
@@ -136,3 +145,4 @@ tree.insert(7)
 tree.pretty_print
 tree.delete(3)
 tree.pretty_print
+puts tree.level_order
